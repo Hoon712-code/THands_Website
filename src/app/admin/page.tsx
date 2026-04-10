@@ -12,6 +12,8 @@ interface TrialRequest {
   preferred_day: string;
   experience: string;
   status: string;
+  assigned_to: string;
+  notes: string;
   created_at: string;
 }
 
@@ -36,6 +38,65 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   confirmed: { label: "확정", color: "bg-green-100 text-green-800" },
   cancelled: { label: "취소", color: "bg-red-100 text-red-800" },
 };
+
+const TEACHERS = ["", "송아라", "이수진"];
+
+function NotesCell({ id, initialNotes }: { id: string; initialNotes: string }) {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(initialNotes || "");
+  const [saved, setSaved] = useState(initialNotes || "");
+  const [saving, setSaving] = useState(false);
+
+  async function handleSave() {
+    setSaving(true);
+    await supabase
+      .from("trial_requests")
+      .update({ notes: value })
+      .eq("id", id);
+    setSaved(value);
+    setEditing(false);
+    setSaving(false);
+  }
+
+  if (editing) {
+    return (
+      <div className="flex items-center gap-1">
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          className="w-full px-2 py-1 text-xs border rounded focus:outline-none focus:ring-1 focus:ring-green-500"
+          autoFocus
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSave();
+            if (e.key === "Escape") { setValue(saved); setEditing(false); }
+          }}
+        />
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="text-xs px-2 py-1 bg-[#7BA05B] text-white rounded hover:bg-[#628A45] whitespace-nowrap"
+        >
+          {saving ? "..." : "저장"}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-1">
+      <span className="text-xs text-gray-600 truncate max-w-[120px]">
+        {saved || "-"}
+      </span>
+      <button
+        onClick={() => setEditing(true)}
+        className="text-xs px-2 py-1 border rounded text-gray-500 hover:bg-gray-100 whitespace-nowrap"
+      >
+        {saved ? "수정" : "입력"}
+      </button>
+    </div>
+  );
+}
 
 export default function AdminPage() {
   const [requests, setRequests] = useState<TrialRequest[]>([]);
@@ -79,14 +140,14 @@ export default function AdminPage() {
     fetchRequests();
   }, [authenticated]);
 
-  async function updateStatus(id: string, status: string) {
+  async function updateField(id: string, field: string, value: string) {
     await supabase
       .from("trial_requests")
-      .update({ status })
+      .update({ [field]: value })
       .eq("id", id);
 
     setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status } : r))
+      prev.map((r) => (r.id === id ? { ...r, [field]: value } : r))
     );
   }
 
@@ -136,7 +197,7 @@ export default function AdminPage() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto p-6">
+      <main className="max-w-7xl mx-auto p-6">
         {loading ? (
           <div className="text-center py-20 text-gray-400">불러오는 중...</div>
         ) : requests.length === 0 ? (
@@ -156,7 +217,9 @@ export default function AdminPage() {
                     <th className="text-left px-4 py-3 font-medium text-gray-500">나이/학년</th>
                     <th className="text-left px-4 py-3 font-medium text-gray-500">희망요일</th>
                     <th className="text-left px-4 py-3 font-medium text-gray-500">미술경험</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">상태</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-500">연락 상태</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-500">담당</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-500">비고</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -185,7 +248,7 @@ export default function AdminPage() {
                         <td className="px-4 py-3">
                           <select
                             value={req.status}
-                            onChange={(e) => updateStatus(req.id, e.target.value)}
+                            onChange={(e) => updateField(req.id, "status", e.target.value)}
                             className={`text-xs px-2 py-1 rounded-full font-medium border-0 cursor-pointer ${statusInfo.color}`}
                           >
                             <option value="pending">대기</option>
@@ -193,6 +256,21 @@ export default function AdminPage() {
                             <option value="confirmed">확정</option>
                             <option value="cancelled">취소</option>
                           </select>
+                        </td>
+                        <td className="px-4 py-3">
+                          <select
+                            value={req.assigned_to || ""}
+                            onChange={(e) => updateField(req.id, "assigned_to", e.target.value)}
+                            className="text-xs px-2 py-1 border rounded cursor-pointer focus:outline-none focus:ring-1 focus:ring-green-500"
+                          >
+                            <option value="">미지정</option>
+                            {TEACHERS.filter(Boolean).map((t) => (
+                              <option key={t} value={t}>{t}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="px-4 py-3 min-w-[180px]">
+                          <NotesCell id={req.id} initialNotes={req.notes} />
                         </td>
                       </tr>
                     );
