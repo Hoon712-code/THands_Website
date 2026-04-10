@@ -7,6 +7,7 @@ import { fadeUp, staggerContainer, viewportConfig } from "@/lib/animations";
 import { ACADEMY } from "@/lib/constants";
 import { Button } from "@/components/ui/Button";
 import { Phone } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 interface FormData {
   parentName: string;
@@ -27,10 +28,33 @@ export function CTASection() {
     experience: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    setSubmitting(true);
+    setError("");
+
+    const { error: dbError } = await supabase
+      .from("trial_requests")
+      .insert({
+        parent_name: form.parentName,
+        phone: form.phone,
+        child_name: form.childName,
+        child_age: form.childAge,
+        preferred_day: form.preferredDay,
+        experience: form.experience,
+      });
+
+    if (dbError) {
+      setError("신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      setSubmitting(false);
+      return;
+    }
+
     setSubmitted(true);
+    setSubmitting(false);
   }
 
   function handleChange(
@@ -187,8 +211,8 @@ export function CTASection() {
             </div>
 
             <div className="pt-4 flex flex-col sm:flex-row items-center gap-4">
-              <Button type="submit" size="lg" className="w-full sm:w-auto">
-                체험수업 신청하기
+              <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={submitting}>
+                {submitting ? "신청 중..." : "체험수업 신청하기"}
               </Button>
               <span className="text-[var(--text-small)] text-[var(--color-muted)]">
                 또는{" "}
@@ -202,6 +226,9 @@ export function CTASection() {
               </span>
             </div>
 
+            {error && (
+              <p className="text-red-500 text-[var(--text-small)] text-center mt-2">{error}</p>
+            )}
             <p className="text-[var(--text-xs)] text-[var(--color-kraft)] text-center mt-3">
               개인정보는 체험수업 안내 목적으로만 사용되며, 이후 즉시 폐기됩니다.
             </p>
