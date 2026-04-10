@@ -1,7 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { FloatingCTA } from "@/components/layout/FloatingCTA";
-import { SmoothSnapProvider } from "@/components/layout/SmoothSnapProvider";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { PhilosophySection } from "@/components/sections/PhilosophySection";
 import { ProcessSection } from "@/components/sections/ProcessSection";
@@ -14,7 +13,6 @@ import { LocationSection } from "@/components/sections/LocationSection";
 export default function Home() {
   return (
     <>
-      <SmoothSnapProvider />
       <Header />
       <main id="main-content">
         <HeroSection />
