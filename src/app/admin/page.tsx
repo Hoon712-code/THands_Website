@@ -214,19 +214,19 @@ export default function AdminPage() {
         ) : (
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm min-w-[1200px]">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">신청일시</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">학부모</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">연락처</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">아이</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">나이/학년</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">희망요일</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">미술경험</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">연락 상태</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">담당</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">비고</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-500 whitespace-nowrap">신청일시</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-500 whitespace-nowrap">학부모</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-500 whitespace-nowrap">연락처</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-500 whitespace-nowrap">아이</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-500 whitespace-nowrap">나이/학년</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-500 whitespace-nowrap">희망요일</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-500 whitespace-nowrap">미술경험</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-500 whitespace-nowrap">연락 상태</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-500 whitespace-nowrap">담당</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-500 whitespace-nowrap">비고</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -276,7 +276,7 @@ export default function AdminPage() {
                             ))}
                           </select>
                         </td>
-                        <td className="px-4 py-3 min-w-[280px]">
+                        <td className="px-4 py-3 min-w-[280px] max-w-[400px]">
                           <NotesCell id={req.id} initialNotes={req.notes} />
                         </td>
                       </tr>
