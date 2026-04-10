@@ -60,37 +60,44 @@ function NotesCell({ id, initialNotes }: { id: string; initialNotes: string }) {
 
   if (editing) {
     return (
-      <div className="flex items-center gap-1">
-        <input
-          type="text"
+      <div className="flex flex-col gap-1">
+        <textarea
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          className="w-full px-2 py-1 text-xs border rounded focus:outline-none focus:ring-1 focus:ring-green-500"
+          className="w-full px-2 py-1.5 text-xs border rounded focus:outline-none focus:ring-1 focus:ring-green-500 resize-none"
+          rows={3}
           autoFocus
           onKeyDown={(e) => {
-            if (e.key === "Enter") handleSave();
             if (e.key === "Escape") { setValue(saved); setEditing(false); }
           }}
         />
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="text-xs px-2 py-1 bg-[#7BA05B] text-white rounded hover:bg-[#628A45] whitespace-nowrap"
-        >
-          {saving ? "..." : "저장"}
-        </button>
+        <div className="flex gap-1 justify-end">
+          <button
+            onClick={() => { setValue(saved); setEditing(false); }}
+            className="text-xs px-2 py-1 border rounded text-gray-500 hover:bg-gray-100"
+          >
+            취소
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="text-xs px-2 py-1 bg-[#7BA05B] text-white rounded hover:bg-[#628A45]"
+          >
+            {saving ? "..." : "저장"}
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center gap-1">
-      <span className="text-xs text-gray-600 truncate max-w-[120px]">
+    <div className="flex items-start gap-1">
+      <span className="text-xs text-gray-600 whitespace-pre-wrap break-words">
         {saved || "-"}
       </span>
       <button
         onClick={() => setEditing(true)}
-        className="text-xs px-2 py-1 border rounded text-gray-500 hover:bg-gray-100 whitespace-nowrap"
+        className="text-xs px-2 py-1 border rounded text-gray-500 hover:bg-gray-100 whitespace-nowrap shrink-0"
       >
         {saved ? "수정" : "입력"}
       </button>
@@ -269,7 +276,7 @@ export default function AdminPage() {
                             ))}
                           </select>
                         </td>
-                        <td className="px-4 py-3 min-w-[180px]">
+                        <td className="px-4 py-3 min-w-[280px]">
                           <NotesCell id={req.id} initialNotes={req.notes} />
                         </td>
                       </tr>
